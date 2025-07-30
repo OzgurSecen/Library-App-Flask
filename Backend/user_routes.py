@@ -107,6 +107,12 @@ def get_borrowed_books():
     """, (user_id,))
     borrowed = cur.fetchall()
     cur.close()
+
+    status_map = {
+        'pending': 'beklemede',
+        'approved': 'onaylandı',
+        'rejected': 'reddedildi'
+    }
     result = [
         {
             'book_id': row[0],
@@ -115,9 +121,10 @@ def get_borrowed_books():
             'pages': row[3],
             'borrow_date': row[4].isoformat(),
             'return_date': row[5].isoformat(),
-            'status': row[6]
+            'status': status_map.get(row[6], row[6])
         } for row in borrowed
     ]
+    return jsonify(result)
 
 
 @user_bp.route('/login', methods=['POST'])
